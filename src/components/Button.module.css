@@ -1,0 +1,76 @@
+.btn {
+  color: inherit;
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  padding: 1rem 1.8rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background-color 0.18s var(--ease),
+    border-color 0.18s var(--ease), color 0.18s var(--ease),
+    transform 0.18s var(--ease), box-shadow 0.18s var(--ease);
+}
+
+.primary {
+  background-color: var(--color-brand--2);
+  color: #fff;
+  box-shadow: var(--shadow-brand);
+}
+
+.primary:hover {
+  background-color: #e8453a;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-brand-hover);
+}
+
+.primary:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.24);
+}
+
+.back {
+  font-weight: 600;
+  background-color: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--line-strong);
+  color: var(--color-light--3);
+}
+
+.back:hover {
+  background-color: rgba(255, 255, 255, 0.09);
+  border-color: rgba(255, 255, 255, 0.26);
+  color: var(--color-light--2);
+}
+
+.back:active {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+/* Floats over the map, so the cast has to carry it off a bright surface as
+   well as a dark one. */
+.position {
+  position: absolute;
+  z-index: 1000;
+  bottom: 4rem;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 1.2rem 2.4rem;
+  background-color: var(--color-brand--2);
+  color: #fff;
+  border-radius: 999px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.24),
+    0 6px 18px rgba(154, 32, 22, 0.28);
+}
+
+.position:hover {
+  background-color: #e8453a;
+  transform: translateX(-50%) translateY(-2px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.26),
+    0 10px 26px rgba(154, 32, 22, 0.34);
+}
+
+.position:active {
+  transform: translateX(-50%) translateY(0);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}

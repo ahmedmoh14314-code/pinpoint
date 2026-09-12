@@ -1,0 +1,80 @@
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav ul {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 3.2rem;
+}
+
+.nav a:link,
+.nav a:visited {
+  text-decoration: none;
+  color: var(--color-light--3);
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  padding: 0.6rem 0;
+  border-bottom: 2px solid transparent;
+  transition: color 0.18s var(--ease), border-color 0.18s var(--ease);
+}
+
+.nav a:hover {
+  color: var(--color-light--2);
+  border-bottom-color: var(--color-brand--2);
+}
+
+/* CSS Modules feature */
+.nav a:global(.active) {
+  color: var(--color-light--2);
+  border-bottom-color: var(--color-brand--2);
+}
+
+a.ctaLink:link,
+a.ctaLink:visited {
+  color: var(--color-light--2);
+  background-color: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--line-strong);
+  border-bottom-color: var(--line-strong);
+  padding: 0.9rem 2.2rem;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.18s var(--ease),
+    border-color 0.18s var(--ease), transform 0.18s var(--ease);
+}
+
+a.ctaLink:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.32);
+  border-bottom-color: rgba(255, 255, 255, 0.32);
+  color: var(--color-light--2);
+  transform: translateY(-1px);
+}
+
+a.ctaLink:active {
+  transform: translateY(0);
+}
+
+/* Below this the wordmark plus three links are wider than the screen, and the
+   row pushed the Login button off the right edge of the page. Letting the nav
+   wrap and centre keeps everything inside the viewport. */
+@media (max-width: 620px) {
+  .nav {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.6rem;
+  }
+
+  .nav ul {
+    gap: 2rem;
+  }
+
+  a.ctaLink:link,
+  a.ctaLink:visited {
+    padding: 0.8rem 1.8rem;
+  }
+}

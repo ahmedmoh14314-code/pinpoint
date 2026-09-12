@@ -1,0 +1,60 @@
+.city {
+  padding: 2.4rem 2.4rem 2.8rem;
+  max-height: 70%;
+  background-color: var(--color-dark--2);
+  border-radius: var(--radius);
+  overflow-y: auto;
+  border: 1px solid var(--line-soft);
+  box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.city h6 {
+  font-family: var(--font-text);
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-light--1);
+}
+
+.city h3 {
+  font-size: 1.9rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.city h3 span {
+  font-size: 2.8rem;
+  line-height: 1;
+}
+
+.city p {
+  font-size: 1.55rem;
+  line-height: 1.6;
+}
+
+.city a:link,
+.city a:visited {
+  font-size: 1.5rem;
+  color: var(--color-brand--1);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 138, 122, 0.4);
+}
+
+.city a:hover {
+  border-bottom-color: var(--color-brand--1);
+}

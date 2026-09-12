@@ -1,0 +1,50 @@
+.nav {
+  width: 100%;
+  margin-top: 3.2rem;
+  margin-bottom: 2.4rem;
+}
+
+/* A recessed track with a raised tab in it. The track is darker than the
+   sidebar, the selected tab lighter, so the depth runs the way it looks. */
+.nav ul {
+  list-style: none;
+  display: flex;
+  gap: 0.4rem;
+  padding: 0.4rem;
+  background-color: var(--color-dark--0);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-sm);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.28);
+}
+
+.nav li {
+  flex: 1;
+}
+
+.nav a:link,
+.nav a:visited {
+  display: block;
+  text-align: center;
+  color: var(--color-light--1);
+  text-decoration: none;
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+  padding: 0.8rem 1.6rem;
+  border-radius: 4px;
+  transition: color 0.18s var(--ease), background-color 0.18s var(--ease),
+    box-shadow 0.18s var(--ease);
+}
+
+.nav a:hover {
+  color: var(--color-light--2);
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* CSS Modules feature */
+.nav a:global(.active),
+.nav a:global(.active):hover {
+  background-color: var(--color-dark--2);
+  color: var(--color-light--2);
+  box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}

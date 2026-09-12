@@ -1,0 +1,58 @@
+.user {
+  position: absolute;
+  top: 4.2rem;
+  right: 4.2rem;
+  z-index: 999;
+
+  background-color: var(--color-dark--1);
+  padding: 0.8rem 1.2rem 0.8rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+
+  /* This sits over a light map, so it needs a real cast underneath it and a
+     lit top edge, otherwise it reads as a flat rectangle pasted on. */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 8px 22px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+/* avatar.jpeg is a portrait, so both sides are fixed and the crop is biased
+   upward to keep the face inside the circle. */
+.user img {
+  width: 3.6rem;
+  height: 3.6rem;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center 25%;
+  border: 2px solid var(--color-dark--2);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.user button {
+  background-color: var(--color-dark--2);
+  border: 1px solid var(--line-soft);
+  border-radius: 999px;
+  padding: 0.5rem 1.2rem;
+  color: var(--color-light--3);
+  font-family: var(--font-text);
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 0.18s var(--ease), color 0.18s var(--ease),
+    border-color 0.18s var(--ease);
+}
+
+.user button:hover {
+  background-color: var(--color-brand--2);
+  border-color: var(--color-brand--2);
+  color: #fff;
+}
