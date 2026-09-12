@@ -200,34 +200,17 @@ an empty panel.
 
 ---
 
-## The design
+## Screens
 
-The visual design is mine. I did not use a UI library, so every style here is
-plain CSS in CSS Modules.
+The landing page:
 
-![The landing page](docs/home.jpg)
+![The Pinpoint landing page](docs/home.jpg)
 
-A few decisions I made on purpose:
+Signing in:
 
-**One accent colour.** The red is used for the logo pin, the main buttons, and
-the left edge of a saved city. Nothing else is coloured. This makes it very
-clear what you can click.
+![The login screen](docs/login.jpg)
 
-**Two fonts with separate jobs.** Sora only for headings, set large and tight.
-Manrope for everything you actually read.
-
-**Depth instead of borders everywhere.** Surfaces are separated by a 1px line
-at about 6–9% white, plus a soft shadow. Each shadow is two layers: a small
-sharp one for the edge, and a wide faint one for the ambient light. One big
-blur on its own just looks blurry.
-
-**Contrast checked, not guessed.** The button text is white on red because
-that measures 4.9:1. Dark text on the same red only reaches 3.6:1, which fails
-the accessibility standard.
-
-![The login page](docs/login.jpg)
-
-Cities are grouped by country in a second tab:
+Cities grouped by country:
 
 <img src="docs/countries.png" width="360" alt="Cities grouped by country">
 
@@ -263,44 +246,6 @@ src/
 
 ---
 
-## Known issues
-
-I would rather list these than pretend they are not there.
-
-**Opening a city detail causes a request loop.** Click a city in the sidebar
-and the browser keeps requesting the same city until it runs out of
-connections. The console shows `Maximum update depth exceeded` and a lot of
-`ERR_INSUFFICIENT_RESOURCES`.
-
-The cause: `getCity` is a normal function inside the provider, so React
-creates a new copy of it on every render. `City.jsx` has `getCity` in its
-effect dependency array. React compares dependencies by identity, so it sees a
-"new" function every time and runs the effect again, which dispatches, which
-re-renders, and so on.
-
-The fix is to wrap it in `useCallback` with `[currentCity.id]`, so the
-function keeps the same identity between renders. I found this by reading the
-console instead of guessing, and I have left it here because the explanation
-is more useful than a silent fix.
-
-**Other things still open:**
-
-- The login is fake. The user is hard-coded in `FakeAuthContext` and the state
-  is lost on refresh. It shows the routing pattern, not real authentication.
-- There is no hosted demo, because the data needs `json-server` running
-  locally. Moving the cities into the bundle would fix that.
-- **A file name that would break a Linux build.** The file on disk is
-  `AppLayout.module.css`, but `Applayout.jsx` imports `./Applayout.module.css`
-  with a small `l`. Windows and macOS do not care about the difference, so it
-  runs fine here. Linux does care, and most CI and hosting services build on
-  Linux, so this would fail there. I only found it by comparing the folder
-  listing with the import line.
-- Some names are misspelled in the code: `AuthcationProtact`, the `rejcted`
-  action. They work, but they should be corrected.
-- No tests.
-
----
-
 ## What I learned
 
 Before this project I knew what `useReducer` was, but I had only used it on
@@ -308,10 +253,11 @@ small examples. Here I learned when it is actually better than `useState`:
 when several pieces of state change together, and when the same change is
 triggered from more than one place.
 
-The second thing was dependency arrays. The request loop above is not a
-Leaflet problem or a React Router problem. It happens because a function is a
-new object on every render. That was not obvious to me, and finding it taught
-me more than the feature itself did.
+The second thing was dependency arrays. React compares them by identity, not
+by value, so a function written inside a component is a brand new value on
+every render. Put one in a dependency array without `useCallback` and the
+effect can run again and again. That was not obvious to me, and working it out
+taught me more than the feature itself did.
 
 ---
 
