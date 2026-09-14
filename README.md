@@ -61,6 +61,7 @@ To log in, use the email and password that are already filled in the form.
 | Leaflet | The map |
 | json-server | A fake REST API, so the app talks to a real endpoint |
 | CSS Modules | Styles, with no CSS framework |
+| `lazy` + `Suspense` | Code splitting, one chunk per page |
 | Vite | Dev server and build |
 
 ---
@@ -200,6 +201,34 @@ an empty panel.
 
 ---
 
+## Code splitting
+
+Every page is loaded with `lazy` and wrapped in one `Suspense` boundary:
+
+```jsx
+const Homepage = lazy(() => import("./pages/Homepage"));
+const Applayout = lazy(() => import("./pages/Applayout"));
+
+<Suspense fallback={<SpinnerFullPage />}>
+  <Routes>...</Routes>
+</Suspense>
+```
+
+This matters here because of Leaflet. The map is the biggest dependency in the
+project, and someone who only opens the landing page should not have to
+download it. After the change the build output is split up:
+
+```
+index.js       363 kB   the shell, the router, the contexts
+Applayout.js   157 kB   the map, loaded only when you open /app
+Login.js         1 kB
+Product.js       1 kB
+```
+
+Before, all of this was one 522 kB file that every visitor downloaded.
+
+---
+
 ## Screens
 
 The landing page:
@@ -210,9 +239,13 @@ Signing in:
 
 ![The login screen](docs/login.jpg)
 
-Cities grouped by country:
+One city, with the date and the notes I saved:
 
-<img src="docs/countries.png" width="360" alt="Cities grouped by country">
+![The details of one saved city](docs/city-detail.jpg)
+
+The same cities grouped by country:
+
+![Cities grouped by country](docs/countries.jpg)
 
 ---
 
@@ -238,10 +271,12 @@ src/
 │   ├── useGeolocation.js
 │   └── useUrlPosition.js
 └── pages/
+    ├── Applayout.jsx           the sidebar + map shell
     ├── Homepage.jsx
     ├── Login.jsx
-    ├── Product.jsx
-    └── Pricing.jsx
+    ├── PageNotFound.jsx
+    ├── Pricing.jsx
+    └── Product.jsx
 ```
 
 ---

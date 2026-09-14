@@ -35,6 +35,61 @@
         "lng": 13.376933665713324
       },
       "id": 98443197
+    },
+    {
+      "cityName": "Tadmur",
+      "country": "Syrian Arab Republic",
+      "emoji": "🇸🇾",
+      "date": "2026-09-14T15:44:21.057Z",
+      "position": {
+        "lat": "34.455611651733456",
+        "lng": "38.80371093750001"
+      },
+      "id": 98443198
+    },
+    {
+      "cityName": "Cairo",
+      "country": "Egypt",
+      "emoji": "🇪🇬",
+      "date": "2026-09-14T15:44:27.201Z",
+      "position": {
+        "lat": "29.80403813254271",
+        "lng": "31.420898437500004"
+      },
+      "id": 98443199
+    },
+    {
+      "cityName": "Uqlat as Suqur",
+      "country": "Saudi Arabia",
+      "emoji": "🇸🇦",
+      "date": "2026-09-14T15:44:31.164Z",
+      "position": {
+        "lat": "25.645554415683698",
+        "lng": "41.83593750000001"
+      },
+      "id": 98443200
+    },
+    {
+      "cityName": "Buyukcekmece",
+      "country": "Turkiye",
+      "emoji": "🇹🇷",
+      "date": "2026-09-14T15:49:43.173Z",
+      "position": {
+        "lat": "41.071675766401235",
+        "lng": "28.564453125000004"
+      },
+      "id": 98443201
+    },
+    {
+      "cityName": "Jawl al Majma",
+      "country": "Yemen",
+      "emoji": "🇾🇪",
+      "date": "2026-09-14T15:49:51.862Z",
+      "position": {
+        "lat": "15.083387973497905",
+        "lng": "46.933621408942145"
+      },
+      "id": 98443202
     }
   ]
 }
