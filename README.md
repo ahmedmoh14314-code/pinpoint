@@ -96,7 +96,7 @@ one complete change:
 case "cities/loaded":
   return { ...state, loading: false, cities: action.payload };
 
-case "rejcted":
+case "rejected":
   return { ...state, loading: false, error: action.payload };
 ```
 
@@ -112,7 +112,7 @@ result is sent to the reducer:
 ```js
 async function getCity(id) {
   dispatch({ type: "loading" });
-  const res = await fetch(`${Base_URL}/cities/${id}`);
+  const res = await fetch(`${BASE_URL}/cities/${id}`);
   const data = await res.json();
   dispatch({ type: "city/loaded", payload: data });
 }
@@ -137,7 +137,7 @@ them apart also made each file much shorter.
 check is one small component:
 
 ```jsx
-function AuthcationProtact({ children }) {
+function ProtectedRoute({ children }) {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
@@ -184,7 +184,7 @@ React Router does more here than just show pages. The app uses nested routes,
 so the sidebar stays on screen and only its content changes:
 
 ```jsx
-<Route path="app" element={<AuthcationProtact><Applayout /></AuthcationProtact>}>
+<Route path="app" element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
   <Route index element={<Navigate replace to="cities" />} />
   <Route path="cities" element={<CityList />} />
   <Route path="cities/:id" element={<City />} />
@@ -207,7 +207,7 @@ Every page is loaded with `lazy` and wrapped in one `Suspense` boundary:
 
 ```jsx
 const Homepage = lazy(() => import("./pages/Homepage"));
-const Applayout = lazy(() => import("./pages/Applayout"));
+const AppLayout = lazy(() => import("./pages/AppLayout"));
 
 <Suspense fallback={<SpinnerFullPage />}>
   <Routes>...</Routes>
@@ -220,7 +220,7 @@ download it. After the change the build output is split up:
 
 ```
 index.js       363 kB   the shell, the router, the contexts
-Applayout.js   157 kB   the map, loaded only when you open /app
+AppLayout.js   157 kB   the map, loaded only when you open /app
 Login.js         1 kB
 Product.js       1 kB
 ```
@@ -256,7 +256,7 @@ src/
 ├── App.jsx                    all the routes
 ├── index.css                  design tokens, resets, global styles
 ├── components/
-│   ├── AuthcationProtact.jsx  the protected route wrapper
+│   ├── ProtectedRoute.jsx     the protected route wrapper
 │   ├── CityItem.jsx           one row in the sidebar list
 │   ├── CityList.jsx           the list of saved cities
 │   ├── City.jsx               details for one city
@@ -271,7 +271,7 @@ src/
 │   ├── useGeolocation.js
 │   └── useUrlPosition.js
 └── pages/
-    ├── Applayout.jsx           the sidebar + map shell
+    ├── AppLayout.jsx           the sidebar + map shell
     ├── Homepage.jsx
     ├── Login.jsx
     ├── PageNotFound.jsx

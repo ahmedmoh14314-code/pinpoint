@@ -7,10 +7,10 @@ import City from "./components/City";
 import Form from "./components/Form";
 import { CitiesProvider } from "./contexts/CitiesContext";
 import { AuthProvider } from "./contexts/FakeAuthContext";
-import AuthcationProtact from "./components/AuthcationProtact";
+import ProtectedRoute from "./components/ProtectedRoute";
 import SpinnerFullPage from "./components/SpinnerFullPage";
 const Homepage = lazy(() => import("./pages/Homepage"));
-const Applayout = lazy(() => import("./pages/Applayout"));
+const AppLayout = lazy(() => import("./pages/AppLayout"));
 const Login = lazy(() => import("./pages/Login"));
 const Pricing = lazy(() => import("./pages/Pricing"));
 const Product = lazy(() => import("./pages/Product"));
@@ -31,9 +31,9 @@ function App() {
               <Route
                 path="app"
                 element={
-                  <AuthcationProtact>
-                    <Applayout />
-                  </AuthcationProtact>
+                  <ProtectedRoute>
+                    <AppLayout />
+                  </ProtectedRoute>
                 }
               >
                 <Route index element={<Navigate replace to="cities" />} />
