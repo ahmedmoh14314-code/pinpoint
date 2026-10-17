@@ -1,299 +1,94 @@
 # Pinpoint
 
-Pinpoint is a travel app. You click a place on a world map, and the app saves
-that city to your list. You can add the date you went there and a short note.
-Cities are also grouped by country, so you can see every country you have
-visited.
+A travel map. Click a place on the map and the app saves that city to your list, with the date you went and a note. Cities are also grouped by country. Built to learn React Router's nested routes and `useReducer` properly.
+
+React 18 · React Router 6 · Context + `useReducer` · Leaflet · CSS Modules · Vite
 
 ![The app with the map and the saved cities](docs/app.jpg)
 
-This is a demo app. It runs on a local fake API, so there is no hosted link.
-The instructions below start it in about one minute.
+## Live demo
 
----
+There is no hosted version: the cities come from a local `json-server` API, so the app runs on your machine. The steps are at the bottom and take about a minute. The login form is pre-filled with the fake account from `FakeAuthContext.jsx`.
 
-## What it does
+## What this project demonstrates
 
-- Click anywhere on the map to add a city
-- The app reads the coordinates and fills in the city and country for you
-- Save a date and your own notes for each city
-- See all your cities in a list, or grouped by country
-- Delete a city from the list
-- Click "Use your position" to jump the map to where you are
-- Log in and log out (fake auth, see the note below)
+- **Nested routes with a persistent layout.** `/app` renders `AppLayout` with the sidebar and the map; `cities`, `cities/:id`, `countries` and `form` render into an `<Outlet />` in the sidebar, so the map keeps its zoom and position while you move between them. An `index` route redirects `/app` to `/app/cities`.
+- **A protected route.** `ProtectedRoute` reads `isAuthenticated` from Context and sends you to the homepage in an effect, returning `null` meanwhile so nothing flashes.
+- **State in the URL.** The map position lives in search params (`/app/form?lat=…&lng=…`). The `useUrlPosition` hook reads it, so the form and the map agree without passing props, and a link can be shared.
+- **`useReducer` for state that changes together.** `CitiesContext` keeps `cities`, `loading`, `currentCity` and `error` in one reducer. The reducer is pure; the `fetch` calls live in the provider and only dispatch results.
+- **Two contexts, not one.** Cities and auth change at different times, so they are separate providers and logging in does not re-render the city list.
+- **Custom hooks with one job.** `useUrlPosition` and `useGeolocation`, which wraps the browser geolocation API with loading and error state.
+- **Code splitting.** Every page is `lazy()` behind one `Suspense`. Leaflet is the biggest dependency, and someone who only opens the landing page should not download it. The build went from one 522 kB file to a 363 kB shell plus a 157 kB `AppLayout` chunk loaded only on `/app`.
+- **Data fetching with error states.** A reverse-geocoding call fills the city and country from the clicked coordinates, with a message when the click is not on a city.
+- **Styling without a framework.** CSS Modules per component, design tokens in `index.css`.
 
----
+## Key decisions
 
-## How to run it
+- **`useReducer` instead of `useState`.** Every action touches more than one value: a fetch sets `loading`, then sets `loading` back and fills `cities` or `error`. With `useState` that is three or four `set` calls per function; with a reducer each case is one complete change in one file.
+- **`useCallback` on `getCity`.** It is a dependency of an effect in `City.jsx`; without memoising it, the effect would run on every render.
+- **Navigation through the map.** Clicking the map does not set state; it navigates to `form?lat&lng`. The URL is the single source of the position.
 
-You need Node.js. The app needs two terminals, because the data comes from a
-local API.
+## Where to look
 
-```bash
-npm install
-```
+| File | What it shows |
+| --- | --- |
+| `src/App.jsx` | The route tree, lazy pages, providers |
+| `src/contexts/CitiesContext.jsx` | The reducer, the fetches, the `useCallback` |
+| `src/components/ProtectedRoute.jsx` | Route protection |
+| `src/components/Map.jsx` | Leaflet, `useMapEvents`, geolocation, URL position |
+| `src/components/Form.jsx` | Reverse geocoding and the add-city form |
+| `src/hooks/` | `useUrlPosition`, `useGeolocation` |
 
-**Terminal 1** — the fake API:
+## Screenshots
 
-```bash
-npm run server
-```
+| Landing page | Login |
+| --- | --- |
+| ![The Pinpoint landing page](docs/home.jpg) | ![The login screen](docs/login.jpg) |
 
-**Terminal 2** — the app:
-
-```bash
-npm run dev
-```
-
-Open the address that Vite prints, usually `http://localhost:5173`.
-
-To log in, use the email and password that are already filled in the form.
-
----
+| One city, with date and notes | Grouped by country |
+| --- | --- |
+| ![The details of one saved city](docs/city-detail.jpg) | ![Cities grouped by country](docs/countries.jpg) |
 
 ## Tech stack
 
 | What | Why |
 | --- | --- |
-| React 18 | The whole UI |
+| React 18 | The UI |
 | React Router 6 | Pages, nested routes, URL parameters |
 | Context + `useReducer` | Shared state for cities and for auth |
-| Leaflet | The map |
+| Leaflet + react-leaflet | The map |
 | json-server | A fake REST API, so the app talks to a real endpoint |
-| CSS Modules | Styles, with no CSS framework |
-| `lazy` + `Suspense` | Code splitting, one chunk per page |
+| CSS Modules | Styles, no framework |
 | Vite | Dev server and build |
-
----
-
-## How the state works
-
-This is the part I spent the most time on, so I want to explain it properly.
-
-### Why `useReducer` and not `useState`
-
-The cities data has four values that always change together:
-
-```js
-const initialState = {
-  cities: [],
-  loading: false,
-  currentCity: {},
-  error: "",
-};
-```
-
-Every action touches more than one of them at the same time. When a fetch
-starts, `loading` becomes `true`. When it finishes, `loading` goes back to
-`false` **and** `cities` gets the new data. When it fails, `loading` goes back
-to `false` **and** `error` gets a message.
-
-With `useState` this would be three or four `set` calls in a row, in every
-function, and it is easy to forget one. With `useReducer` each case describes
-one complete change:
-
-```js
-case "cities/loaded":
-  return { ...state, loading: false, cities: action.payload };
-
-case "rejected":
-  return { ...state, loading: false, error: action.payload };
-```
-
-Now every state change lives in one file and I can read all of them in one
-place.
-
-### Why the reducer never fetches
-
-The reducer is a pure function. It only takes the old state and an action, and
-returns the new state. The `fetch` calls happen in the provider, and only the
-result is sent to the reducer:
-
-```js
-async function getCity(id) {
-  dispatch({ type: "loading" });
-  const res = await fetch(`${BASE_URL}/cities/${id}`);
-  const data = await res.json();
-  dispatch({ type: "city/loaded", payload: data });
-}
-```
-
-This keeps the reducer easy to follow. Same action in, same state out, always.
-
-### Two contexts, not one
-
-There are two separate providers:
-
-- `CitiesContext` — the cities, the current city, loading and error
-- `FakeAuthContext` — the user and whether they are logged in
-
-They change at completely different times. Logging in should not make the city
-list re-render, and loading a city has nothing to do with the user. Keeping
-them apart also made each file much shorter.
-
-### The protected route
-
-`/app` and everything under it should only work when you are logged in. That
-check is one small component:
-
-```jsx
-function ProtectedRoute({ children }) {
-  const { isAuthenticated } = useAuth();
-  const navigate = useNavigate();
-
-  useEffect(
-    function () {
-      if (!isAuthenticated) navigate("/");
-    },
-    [isAuthenticated, navigate],
-  );
-
-  return isAuthenticated ? children : null;
-}
-```
-
-It sends you back to the homepage if you are not logged in, and returns `null`
-in the meantime so nothing flashes on the screen first.
-
----
-
-## Custom hooks
-
-Two small hooks, each doing one job.
-
-**`useUrlPosition`** reads the latitude and longitude out of the URL:
-
-```js
-const [lat, lng] = useUrlPosition();
-```
-
-The map position lives in the URL (`/app/form?lat=38.7&lng=-9.1`). That means
-you can copy the link, send it to someone, and they see the same place. It
-also means the form and the map can both read the position without passing
-props between them.
-
-**`useGeolocation`** wraps the browser geolocation API. It returns the
-position, a loading flag, an error, and the `getPosition` function that starts
-the request.
-
----
-
-## Routing
-
-React Router does more here than just show pages. The app uses nested routes,
-so the sidebar stays on screen and only its content changes:
-
-```jsx
-<Route path="app" element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
-  <Route index element={<Navigate replace to="cities" />} />
-  <Route path="cities" element={<CityList />} />
-  <Route path="cities/:id" element={<City />} />
-  <Route path="countries" element={<CountryList />} />
-  <Route path="form" element={<Form />} />
-</Route>
-```
-
-The `<Outlet />` sits inside `Sidebar`, so the child route renders in the left
-panel while the map stays mounted on the right. That matters: the map keeps
-its zoom and position when you move between Cities, Countries and the form.
-The `index` route redirects `/app` to `/app/cities`, so the app never opens on
-an empty panel.
-
----
-
-## Code splitting
-
-Every page is loaded with `lazy` and wrapped in one `Suspense` boundary:
-
-```jsx
-const Homepage = lazy(() => import("./pages/Homepage"));
-const AppLayout = lazy(() => import("./pages/AppLayout"));
-
-<Suspense fallback={<SpinnerFullPage />}>
-  <Routes>...</Routes>
-</Suspense>
-```
-
-This matters here because of Leaflet. The map is the biggest dependency in the
-project, and someone who only opens the landing page should not have to
-download it. After the change the build output is split up:
-
-```
-index.js       363 kB   the shell, the router, the contexts
-AppLayout.js   157 kB   the map, loaded only when you open /app
-Login.js         1 kB
-Product.js       1 kB
-```
-
-Before, all of this was one 522 kB file that every visitor downloaded.
-
----
-
-## Screens
-
-The landing page:
-
-![The Pinpoint landing page](docs/home.jpg)
-
-Signing in:
-
-![The login screen](docs/login.jpg)
-
-One city, with the date and the notes I saved:
-
-![The details of one saved city](docs/city-detail.jpg)
-
-The same cities grouped by country:
-
-![Cities grouped by country](docs/countries.jpg)
-
----
 
 ## Project structure
 
 ```
 src/
-├── App.jsx                    all the routes
-├── index.css                  design tokens, resets, global styles
-├── components/
-│   ├── ProtectedRoute.jsx     the protected route wrapper
-│   ├── CityItem.jsx           one row in the sidebar list
-│   ├── CityList.jsx           the list of saved cities
-│   ├── City.jsx               details for one city
-│   ├── CountryList.jsx        cities grouped by country
-│   ├── Form.jsx               add a new city
-│   ├── Map.jsx                the Leaflet map
-│   └── Sidebar.jsx            the left panel
-├── contexts/
-│   ├── CitiesContext.jsx      useReducer + fetching
-│   └── FakeAuthContext.jsx    login state
-├── hooks/
-│   ├── useGeolocation.js
-│   └── useUrlPosition.js
-└── pages/
-    ├── AppLayout.jsx           the sidebar + map shell
-    ├── Homepage.jsx
-    ├── Login.jsx
-    ├── PageNotFound.jsx
-    ├── Pricing.jsx
-    └── Product.jsx
+├── App.jsx                the routes
+├── components/            CityList, City, CountryList, Form, Map, Sidebar, ProtectedRoute, …
+├── contexts/              CitiesContext.jsx (useReducer + fetching), FakeAuthContext.jsx
+├── hooks/                 useGeolocation.js, useUrlPosition.js
+├── pages/                 AppLayout, Homepage, Login, Pricing, Product, PageNotFound
+└── index.css              design tokens, resets
 ```
-
----
 
 ## What I learned
 
-Before this project I knew what `useReducer` was, but I had only used it on
-small examples. Here I learned when it is actually better than `useState`:
-when several pieces of state change together, and when the same change is
-triggered from more than one place.
+When `useReducer` is better than `useState`: when several pieces of state change together, and when the same change is triggered from more than one place.
 
-The second thing was dependency arrays. React compares them by identity, not
-by value, so a function written inside a component is a brand new value on
-every render. Put one in a dependency array without `useCallback` and the
-effect can run again and again. That was not obvious to me, and working it out
-taught me more than the feature itself did.
+And dependency arrays. React compares them by identity, so a function written inside a component is a new value on every render. Put one in a dependency array without `useCallback` and the effect runs again and again. Working that out taught me more than the feature itself.
 
----
+## Running locally
+
+Two terminals, because the data comes from a local API.
+
+```bash
+npm install
+npm run server   # json-server on http://localhost:9000
+npm run dev      # Vite, usually http://localhost:5173
+```
+
+Log in with the email and password already filled in the form.
 
 Map data from OpenStreetMap. Photos from Unsplash.
